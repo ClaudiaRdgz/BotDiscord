@@ -1,21 +1,21 @@
-const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+const { ActionRowBuilder, ModalBuilder, TextInputBuilder } = require('discord.js');
+const { TextInputStyle } = require('discord-api-types/v10');
 
 module.exports = {
-	run: async ({ interaction }) => {
-		const modal = new ModalBuilder({
-			customId: 'myModal-${interaction.user.id}',
-			title: 'My Modal',
-		});
-		const favoriteColorInput = new TextInputBuilder({
-			customId: 'favoriteColorInput',
-			label: 'What is your favorite color?',
-			style: TextInputStyle.Short,
-		});
-		const hobbiesInput = new TextInputBuilder({
-			customId: 'hobbiesInput',
-			label: 'What is some of your favorite hobbies?',
-			style: TextInputStyle.Paragraph,
-		});
+	async execute(interaction) {
+		const modal = new ModalBuilder()
+			.setCustomId(`myModal-${interaction.user.id}`)
+			.setTitle('My Modal');
+
+		const favoriteColorInput = new TextInputBuilder()
+			.setCustomId('favoriteColorInput')
+			.setLabel('What is your favorite color?')
+			.setStyle(TextInputStyle.Short);
+
+		const hobbiesInput = new TextInputBuilder()
+			.setCustomId('hobbiesInput')
+			.setLabel('What is some of your favorite hobbies?')
+			.setStyle(TextInputStyle.Paragraph);
 
 		const firstActionRow = new ActionRowBuilder().addComponents(favoriteColorInput);
 		const secondActionRow = new ActionRowBuilder().addComponents(hobbiesInput);
@@ -25,7 +25,8 @@ module.exports = {
 		await interaction.showModal(modal);
 
 		// eslint-disable-next-line no-shadow
-		const filter = (interaction) => interaction.customId === 'myModal-${interaction.user.id}';
+
+		const filter = (i) => i.customId === `myModal-${interaction.user.id}` && i.user.id === interaction.user.id;
 
 		interaction
 			.awaitModalSubmit({ filter, time: 30_000 })
